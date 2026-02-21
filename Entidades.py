@@ -8,6 +8,9 @@ class Usuario:
     def agregarPrestamo(self, isbn):
         self.prestamos_actuales.append(isbn)
 
+    def __str__(self):
+        return f"\n[ID: {self.id_usuario}] {self.nombre} {self.apellido} - Libros en mano: {len(self.prestamos_actuales)}"
+
 
 class Libro:
     def __init__(self, isbn, titulo, autor, stock):
@@ -19,7 +22,7 @@ class Libro:
         self.veces_prestado = 0
 
     def __str__(self):
-        return f"[{self.isbn}] {self.titulo} - {self.autor} (Disponibles: {self.ejemplares_disponibles})"
+        return f"\n[{self.isbn}] {self.titulo} - {self.autor} (Disponibles: {self.ejemplares_disponibles})"
     
 
 class Biblioteca:
@@ -54,3 +57,14 @@ class Biblioteca:
             if autor_buscar.lower() in libro.autor.lower():
                 encontrados.append(libro)
         return encontrados
+
+    def registrar_usuario(self, id_usuario, nombre, apellido):
+        if id_usuario in self.usuarios:
+            return False
+        
+        nuevo_usuario = Usuario(id_usuario, nombre, apellido)
+        self.usuarios[id_usuario] = nuevo_usuario
+        return True
+
+    def obtener_usuarios(self):
+        return self.usuarios.values()

@@ -52,9 +52,35 @@ def interfaz_buscar_autor():
     else:
         print("No se encontraron libros de ese autor.")
 
+def interfaz_alta_usuario():
+    print("\n--- Alta de Usuario ---")
+    id_usuario = input("Ingrese el ID del usuario (debe ser único): ")
+    nombre = input("Nombre: ")
+    apellido = input("Apellido: ")
+    
+    # Llamamos al método y guardamos el resultado (True o False)
+    exito = biblioteca.registrar_usuario(id_usuario, nombre, apellido)
+    
+    if exito:
+        print(f"¡Usuario '{nombre} {apellido}' registrado con éxito!")
+    else:
+        print("Error: Ya existe un usuario registrado con ese ID. Intente con otro.")
+
+def interfaz_consultar_usuarios():
+    print("\n--- Lista de Usuarios Registrados ---")
+    lista_usuarios = biblioteca.obtener_usuarios()
+    
+    # Validamos si el diccionario de usuarios está vacío
+    if not lista_usuarios:
+        print("Aún no hay usuarios registrados en el sistema.")
+    else:
+        # Si hay usuarios, los imprimimos uno por uno
+        for usuario in lista_usuarios:
+            print(usuario) # Llama automáticamente al __str__ de la clase Usuario
+
 
 while True:
-    print("""Selecciona el número correspondiente a la opción deseada [1-5]
+    print("""\nSelecciona el número correspondiente a la opción deseada [1-5]
     1) Alta y gestión de libros
     2) Registro de usuarios
     3) Préstamos y devoluciones
@@ -66,7 +92,7 @@ while True:
 
     if opc == "1":
         while True:
-            print("""Selecciona el número correspondiente a la opción deseada [1-5]
+            print("""\nSelecciona el número correspondiente a la opción deseada [1-5]
             1) Registrar libro
             2) Consultar disponibilidad
             3) Buscar por título
@@ -85,7 +111,7 @@ while True:
     
     elif opc == "2":
         while True:
-            print("""Selecciona el número correspondiente a la opción deseada [1-3]
+            print("""\nSelecciona el número correspondiente a la opción deseada [1-3]
             1) Alta de usuario
             2) Consultar usuarios existentes
             3) Regresar
@@ -93,8 +119,8 @@ while True:
 
             opc2 = input()
 
-            if opc2 == "1": altaUsuario()
-            elif opc2 == "2": ConsultarUsuarios()
+            if opc2 == "1": interfaz_alta_usuario()
+            elif opc2 == "2": interfaz_consultar_usuarios()
             elif opc2 == "3": break
             else: print("Opcion no válida, intente de nuevo")
     
