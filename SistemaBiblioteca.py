@@ -52,6 +52,62 @@ def interfaz_buscar_autor():
     else:
         print("No se encontraron libros de ese autor.")
 
+def interfaz_registrar_prestamo():
+    print("\n--- Registrar Préstamo ---")
+    isbn = input("ISBN del libro a prestar: ")
+    id_usuario = input("ID del usuario que realiza el préstamo: ")
+    
+    if biblioteca.validar_disponibilidad(isbn):
+        biblioteca.registrar_prestamo(isbn, id_usuario)
+        print("Préstamo registrado exitosamente.")
+    else:
+        print("No se pudo registrar el préstamo ya que actualmente no hay ejemplares disponibles.")
+
+def interfaz_registrar_devolucion():
+    print("\n--- Registrar Devolución ---")
+    isbn = input("ISBN del libro a devolver: ")
+    id_usuario = input("ID del usuario que realiza la devolución: ")
+    
+    biblioteca.registrar_devolucion(isbn, id_usuario)
+    print("Devolución registrada exitosamente.")
+
+def interfaz_libros_mas_prestados():
+    print("\n--- Libros Más Prestados ---")
+    mas_prestados = biblioteca.libros_mas_prestados()
+    
+    if mas_prestados:
+        print("Los libros más prestados son:")
+        for libro in mas_prestados:
+            print(libro)
+    else:
+        print("No hay préstamos registrados.")
+    
+
+def interfaz_reporte_prestamos_activos():
+    print("\n--- Reporte de Préstamos Activos ---")
+    prestamos_activos = biblioteca.prestamos_activos()
+    
+    if prestamos_activos:
+        print("Préstamos activos:")
+        for isbn, id_usuario in prestamos_activos:
+            libro = biblioteca.catalogo[isbn]
+            usuario = biblioteca.usuarios[id_usuario]
+            print(f"Libro: {libro.titulo} (ISBN: {isbn}) - Usuario: {usuario.nombre} (ID: {id_usuario})")
+    else:
+        print("No hay préstamos activos.")
+
+def interfaz_consulta_libros_autor():
+    print("\n--- Consulta de Libros por Autor ---")
+    autor = input("Ingrese el nombre del autor: ")
+    libros_autor = biblioteca.consulta_libros_autor(autor)
+    
+    if libros_autor:
+        print(f"Libros de {autor}:")
+        for libro in libros_autor:
+            print(libro)
+    else:
+        print(f"No se encontraron libros de {autor}.")
+   
 
 while True:
     print("""Selecciona el número correspondiente a la opción deseada [1-5]
@@ -97,6 +153,39 @@ while True:
             elif opc2 == "2": ConsultarUsuarios()
             elif opc2 == "3": break
             else: print("Opcion no válida, intente de nuevo")
+    
+    elif opc == "3":
+        while True:
+            print("""Selecciona el número correspondiente a la opción deseada [1-3]
+            1) Registrar préstamo
+            2) Registrar devolución
+            3) Regresar
+            """)
+
+            opc2 = input()
+
+            if opc2 == "1": interfaz_registrar_prestamo()
+            elif opc2 == "2": interfaz_registrar_devolucion()
+            elif opc2 == "3": break
+            else: print("Opcion no válida, intente de nuevo")
+    
+    elif opc == "4":
+        while True:
+            print("""Selecciona el número correspondiente a la opción deseada [1-4]
+            1) Libros más prestados
+            2) Reporte de libros disponibles
+            3) Reporte de préstamos activos
+            4) Regresar
+            """)
+
+            opc2 = input()
+
+            if opc2 == "1": interfaz_libros_mas_prestados()
+            elif opc2 == "2": interfaz_reporte_prestamos_activos()
+            elif opc2 == "3": interfaz_consulta_libros_autor()
+            elif opc2 == "4": break
+            else: print("Opcion no válida, intente de nuevo")
+
     
     elif opc == "5":
         print("¡Hasta pronto!")
