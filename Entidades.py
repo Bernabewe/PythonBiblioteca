@@ -29,7 +29,7 @@ class Biblioteca:
         # Diccionario: { id_usuario: objeto_usuario }
         self.usuarios = {}
         # Lista de tuplas: [ (isbn, id_user, fecha), ... ]
-        self.prestamos = ()
+        self.prestamos = []
     
     def registrar_libro(self, isbn, titulo, autor, stock):
         libro_nuevo = Libro(isbn, titulo, autor, stock)
@@ -67,7 +67,7 @@ class Biblioteca:
         usuario.agregarPrestamo(isbn)
         
         # Registrar el préstamo
-        self.prestamos += ((isbn, id_usuario),)
+        self.prestamos.append((isbn, id_usuario))
     
     def validar_disponibilidad(self, isbn):
         libro = self.catalogo.get(isbn)
