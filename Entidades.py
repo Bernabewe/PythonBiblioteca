@@ -1,10 +1,23 @@
+# ===================================================================================== #
+# Este proyecto esta documentado segun las especificaciones vistas en clase:
+#   Descripcion:
+#   Input:
+#   Output:
+# ===================================================================================== #
+
 class Usuario:
+    #   Descripcion: Molde para crear los usuarios de la biblioteca
+    #   Input: id_usuario (string), nombre (string), apellido (string)
+    #   Output: Objeto tipo Usuario
     def __init__(self, id_usuario, nombre, apellido):
         self.id_usuario = id_usuario
         self.nombre = nombre
         self.apellido = apellido
         self.prestamos_actuales = []
     
+    #   Descripcion: Agrega el ISBN de un libro a la lista personal del usuario
+    #   Input: isbn (string)
+    #   Output: Ninguno
     def agregarPrestamo(self, isbn):
         self.prestamos_actuales.append(isbn)
 
@@ -13,6 +26,9 @@ class Usuario:
 
 
 class Libro:
+    #   Descripcion: Molde para crear los libros del catalogo
+    #   Input: isbn (string), titulo (string), autor (string), stock (int)
+    #   Output: Objeto tipo Libro
     def __init__(self, isbn, titulo, autor, stock):
         self.isbn = isbn
         self.titulo = titulo
@@ -26,25 +42,38 @@ class Libro:
     
 
 class Biblioteca:
+    #   Descripcion: Clase principal que gestiona las colecciones y la logica del sistema
+    #   Input: Ninguno
+    #   Output: Objeto tipo Biblioteca con diccionarios y listas vacias
     def __init__(self):
-        # Diccionario: { isbn: objeto_libro }
-        self.catalogo = {}
-        # Diccionario: { id_usuario: objeto_usuario }
-        self.usuarios = {}
-        # Lista de tuplas: [ (isbn, id_user, fecha), ... ]
-        self.prestamos = []
+        self.catalogo = {} # Diccionario
+        self.usuarios = {} # Diccionario
+        self.prestamos = [] # Lista de tuplas
     
+    # ====================================================== #
+    # ==========  RF1 — Alta y gestión de libros  ========== #
+    # ====================================================== #
+
     def registrar_libro(self, isbn, titulo, autor, stock):
+        #   Descripcion: Crea un libro y lo guarda en el diccionario catalogo
+        #   Input: isbn (string), titulo (string), autor (string), stock (int)
+        #   Output: Imprime el objeto libro en consola
         libro_nuevo = Libro(isbn, titulo, autor, stock)
         self.catalogo[isbn] = libro_nuevo
         print(libro_nuevo)
     
     def consultar_disponibilidad(self, isbn):
+        #   Descripcion: Busca un libro por su ISBN para verificar su stock
+        #   Input: isbn (string)
+        #   Output: Entero con los ejemplares disponibles, o -1 si no existe
         libro = self.catalogo.get(isbn)
         if libro: return libro.ejemplares_disponibles
         else: return -1
 
     def buscar_por_titulo(self, titulo_buscar):
+        #   DescripciOn: Busca coincidencias parciales de un titulo en el catalogo
+        #   Input: titulo_buscar (string)
+        #   Output: Lista de objetos Libro que coinciden de alguna manera con el input
         encontrados = []
         for libro in self.catalogo.values():
             if titulo_buscar.lower() in libro.titulo.lower():
@@ -52,13 +81,23 @@ class Biblioteca:
         return encontrados
 
     def buscar_por_autor(self, autor_buscar):
+        #   Descripcion: Busca coincidencias parciales de un autor en el catalogo
+        #   Input: autor_buscar (string)
+        #   Output: Lista de objetos Libro que coinciden
         encontrados = []
         for libro in self.catalogo.values():
             if autor_buscar.lower() in libro.autor.lower():
                 encontrados.append(libro)
         return encontrados
 
+    # ================================================== #
+    # ==========  RF2 — Registro de usuarios  ========== #
+    # ================================================== #
+
     def registrar_usuario(self, id_usuario, nombre, apellido):
+        #   Descripcion: Registra un usuario nuevo validando que el ID sea unico
+        #   Input: id_usuario (string), nombre (string), apellido (string)
+        #   Output: Booleano (True si se inserto, False si el ID ya existe)
         if id_usuario in self.usuarios:
             return False
         
@@ -67,8 +106,15 @@ class Biblioteca:
         return True
 
     def obtener_usuarios(self):
+        #   Descripcion: Recupera todos los usuarios registrados
+        #   Input: Ninguno
+        #   Output: Coleccion con los objetos Usuario
         return self.usuarios.values()
     
+    # ====================================================== #
+    # ==========  RF3 — Préstamos y devoluciones  ========== #
+    # ====================================================== #
+
     def registrar_prestamo(self, isbn, id_usuario):
         libro = self.catalogo[isbn]
         usuario = self.usuarios[id_usuario]
