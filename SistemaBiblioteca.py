@@ -1,7 +1,7 @@
 # ========================================================================================================== #
 # Este proyecto esta documentado segun las especificaciones vistas en clase:
 #   Descripcion:
-#   Input y Output: Se omitiran ya que ninguna de las funciones en este archivo tienen Input ni Output)
+#   Input y Output: Se omitiran ya que ninguna de las funciones en este archivo tienen Input ni Output
 # ========================================================================================================== #
 
 from Entidades import Biblioteca
@@ -103,58 +103,51 @@ def interfaz_registrar_prestamo():
     print("\n--- Registrar Prestamo ---")
     isbn = input("ISBN del libro a prestar: ")
     id_usuario = input("ID del usuario que realiza el prestamo: ")
-    
-    if biblioteca.validar_disponibilidad(isbn):
+
+    resultado = biblioteca.validar_posibilidad_prestamo(isbn, id_usuario)
+
+    if resultado == True:
         biblioteca.registrar_prestamo(isbn, id_usuario)
-        print("Prestamo registrado exitosamente.")
+        print("¡Prestamo registrado exitosamente!")
     else:
-        print("No se pudo registrar el prestamo ya que actualmente no hay ejemplares disponibles.")
+        print(resultado)
 
 def interfaz_registrar_devolucion():
     print("\n--- Registrar Devolucion ---")
     isbn = input("ISBN del libro a devolver: ")
     id_usuario = input("ID del usuario que realiza la devolucion: ")
     
-    biblioteca.registrar_devolucion(isbn, id_usuario)
-    print("Devolucion registrada exitosamente.")
-
-def interfaz_libros_mas_prestados():
-    print("\n--- Libros Mas Prestados ---")
-    mas_prestados = biblioteca.libros_mas_prestados()
-    
-    if mas_prestados:
-        print("Los libros mas prestados son:")
-        for libro in mas_prestados:
-            print(libro)
+    resultado = biblioteca.registrar_devolucion(isbn, id_usuario)
+    if resultado:
+        print("Devolucion registrada exitosamente.")
     else:
-        print("No hay prestamos registrados.")
+        print(f"No existe ningun prestamo activo con el id_usuario {id_usuario} e isbn: {isbn}")
+
+def interfaz_obtener_top_libros():
+    print("\n--- Reporte: Los 3 Libros mas Solicitados ---")
+    resultados = biblioteca.obtener_top_libros()
+    
+    if not resultados:
+        print("No hay prestamos activos")
+    else:
+        posicion = 1
+        for libro in resultados:
+            print(f"{posicion}. {libro.titulo} - ISBN: {libro.isbn}")
+            posicion += 1
     
 
 def interfaz_reporte_prestamos_activos():
     print("\n--- Reporte de Prestamos Activos ---")
-    prestamos_activos = biblioteca.prestamos_activos()
+    prestamos_activos = biblioteca.consulta_prestamos_activos()
     
     if prestamos_activos:
-        print("Prestamos activos:")
-        for isbn, id_usuario in prestamos_activos:
+        for isbn, id_usuario, fecha in prestamos_activos:
             libro = biblioteca.catalogo[isbn]
             usuario = biblioteca.usuarios[id_usuario]
-            print(f"Libro: {libro.titulo} (ISBN: {isbn}) - Usuario: {usuario.nombre} (ID: {id_usuario})")
+            print(f"Libro: {libro.titulo} (ISBN: {isbn}) - Usuario: {usuario.nombre} (ID: {id_usuario}) - Fecha Prestamo: {fecha}")
     else:
         print("No hay prestamos activos.")
 
-def interfaz_consulta_libros_autor():
-    print("\n--- Consulta de Libros por Autor ---")
-    autor = input("Ingrese el nombre del autor: ")
-    libros_autor = biblioteca.consulta_libros_autor(autor)
-    
-    if libros_autor:
-        print(f"Libros de {autor}:")
-        for libro in libros_autor:
-            print(libro)
-    else:
-        print(f"No se encontraron libros de {autor}.")
-   
 #   Descripcion: Bucle infinito que mantiene la ejecucion del programa
 #   Controla el flujo de navegacion entre los submenus del sistema
 while True:
@@ -219,18 +212,18 @@ while True:
     
     elif opc == "4":
         while True:
-            print("""Selecciona el numero correspondiente a la opcion deseada [1-4]
-            1) Libros mas prestados
-            2) Reporte de libros disponibles
-            3) Reporte de prestamos activos
-            4) Regresar
+            print("""Selecciona el numero correspondiente:
+                1) Top 3 Libros mas prestados
+                2) Reporte de prestamos activos
+                3) Consulta de libros por autor
+                4) Regresar
             """)
 
             opc2 = input()
 
-            if opc2 == "1": interfaz_libros_mas_prestados()
+            if opc2 == "1": interfaz_obtener_top_libros()
             elif opc2 == "2": interfaz_reporte_prestamos_activos()
-            elif opc2 == "3": interfaz_consulta_libros_autor()
+            elif opc2 == "3": interfaz_buscar_autor()
             elif opc2 == "4": break
             else: print("Opcion no valida, intente de nuevo")
 

@@ -5,6 +5,9 @@
 #   Output:
 # ===================================================================================== #
 
+from datetime import datetime
+
+
 class Usuario:
     #   Descripcion: Molde para crear los usuarios de la biblioteca
     #   Input: id_usuario (string), nombre (string), apellido (string)
@@ -48,10 +51,11 @@ class Biblioteca:
     def __init__(self):
         self.catalogo = {} # Diccionario
         self.usuarios = {} # Diccionario
-        self.prestamos = [] # Lista de tuplas
+        self.prestamos_activos = [] # Lista de tuplas vigentes
+        self.prestamos_historicos = [] # Lista de tuplas (historial)
     
     # ====================================================== #
-    # ==========  RF1 — Alta y gestión de libros  ========== #
+    # ==========  RF1 — Alta y gestion de libros  ========== #
     # ====================================================== #
 
     def registrar_libro(self, isbn, titulo, autor, stock):
@@ -112,60 +116,94 @@ class Biblioteca:
         return self.usuarios.values()
     
     # ====================================================== #
-    # ==========  RF3 — Préstamos y devoluciones  ========== #
+    # ==========  RF3 — Prestamos y devoluciones  ========== #
     # ====================================================== #
 
     def registrar_prestamo(self, isbn, id_usuario):
+        # Obtenemos la fecha actual y le damos formato DIA/MES/AÑO
+        # Esto si se busco en internet
+        fecha_hoy = datetime.now().strftime("%d/%m/%Y")
+        
         libro = self.catalogo[isbn]
         usuario = self.usuarios[id_usuario]
         
-        # Actualizar el libro
         libro.ejemplares_disponibles -= 1
         libro.veces_prestado += 1
         
-        # Actualizar el usuario
         usuario.agregarPrestamo(isbn)
         
-        # Registrar el préstamo
-        self.prestamos.append((isbn, id_usuario))
-    
-    def validar_disponibilidad(self, isbn):
-        libro = self.catalogo.get(isbn)
-        if libro and libro.ejemplares_disponibles > 0:
-            return True
-        return False
-    
+        self.prestamos_historicos.append((isbn, id_usuario, fecha_hoy))
+        self.prestamos_activos.append((isbn, id_usuario, fecha_hoy))
+
     def registrar_devolucion(self, isbn, id_usuario):
-        libro = self.catalogo[isbn]
-        usuario = self.usuarios[id_usuario]
+        libro = self.catalogo.get(isbn)
+        usuario = self.usuarios.get(id_usuario)
         
-        # Actualizar el libro
+        if not libro or not usuario: return False
+
         libro.ejemplares_disponibles += 1
-        
-        # Actualizar el usuario
+
         if isbn in usuario.prestamos_actuales:
             usuario.prestamos_actuales.remove(isbn)
+    
+        for t in self.prestamos_activos:
+            if t[0] == isbn and t[1] == id_usuario:
+                self.prestamos_activos.remove(t)
+                return True
+        return False
+
+    def obtener_top_libros(self):
+        conteo = {}
         
+        for registro in self.prestamos_historicos:
+            isbn = registro[0]
+            if isbn in conteo:
+                conteo[isbn] += 1
+            else:
+                conteo[isbn] = 1
+                
+        top_3_libros = []
+        
+        for i in range(3):
+            max_v = -1
+            isbn_mayor = None
+            
+            for isbn, valor in conteo.items():
+                if valor > max_v:
+                    max_v = valor
+                    isbn_mayor = isbn
+            
+            if isbn_mayor:
+                top_3_libros.append(self.catalogo[isbn_mayor])
+                conteo[isbn_mayor] = -1
+                
+        return top_3_libros
+
+    def consulta_prestamos_activos(self):
+        return self.prestamos_activos
     
-  
-    def libros_mas_prestados(self):
-        libros = self.catalogo.values().split()
-        frecuencia_dict = {}
-        for libro in libros:
-            frecuencia_dict[libro.titulo] = frecuencia_dict.get(libro.titulo, 0) + libro.veces_prestado
-    
-    
-    def prestamos_activos(self):
-        # Retorna una lista de préstamos que aún no han sido devueltos
-        activos = []
-        for isbn, id_usuario in self.prestamos:
-            libro = self.catalogo[isbn]
-            usuario = self.usuarios[id_usuario]
-            if isbn in usuario.prestamos_actuales:
-                activos.append((libro, usuario))
-        return activos
-    
-    def consulta_libros_autor(self, autor):
-        return self.buscar_por_autor(autor)
+    # ====================================================== #
+    # =============  RF5 — Reglas del negocio ============== #
+    # ====================================================== #
+
+    def validar_posibilidad_prestamo(self, isbn, id_usuario):
+        libro = self.catalogo.get(isbn)
+        if not libro:
+            return "Error: El ISBN no existe en el catalogo."
+        
+        usuario = self.usuarios.get(id_usuario)
+        if not usuario:
+            return "Error: El ID de usuario no esta registrado."
+        
+        if libro.ejemplares_disponibles <= 0:
+            return "Error: No hay ejemplares disponibles de este libro."
+        
+        if len(usuario.prestamos_actuales) >= 3:
+            return "Error: El usuario ya tiene el limite de 3 prestamos activos."
+        
+        if isbn in usuario.prestamos_actuales:
+            return "Error: El usuario ya cuenta con un ejemplar de este mismo libro."
+        
+        return True
 
     
