@@ -103,12 +103,9 @@ def interfaz_registrar_prestamo():
     print("\n--- Registrar Prestamo ---")
     isbn = input("ISBN del libro a prestar: ")
     id_usuario = input("ID del usuario que realiza el prestamo: ")
-    
-    if biblioteca.validar_disponibilidad(isbn):
-        biblioteca.registrar_prestamo(isbn, id_usuario)
-        print("Prestamo registrado exitosamente.")
-    else:
-        print("No se pudo registrar el prestamo ya que actualmente no hay ejemplares disponibles.")
+
+    exito, mensaje = biblioteca.registrar_prestamo(isbn, id_usuario)
+    print(mensaje)
 
 def interfaz_registrar_devolucion():
     print("\n--- Registrar Devolucion ---")
@@ -117,6 +114,10 @@ def interfaz_registrar_devolucion():
     
     biblioteca.registrar_devolucion(isbn, id_usuario)
     print("Devolucion registrada exitosamente.")
+
+    # ====================================================== #
+    # ==========  RF4 — Consultas y reportes  ========== #
+    # ====================================================== #
 
 def interfaz_libros_mas_prestados():
     print("\n--- Libros Mas Prestados ---")
@@ -136,10 +137,8 @@ def interfaz_reporte_prestamos_activos():
     
     if prestamos_activos:
         print("Prestamos activos:")
-        for isbn, id_usuario in prestamos_activos:
-            libro = biblioteca.catalogo[isbn]
-            usuario = biblioteca.usuarios[id_usuario]
-            print(f"Libro: {libro.titulo} (ISBN: {isbn}) - Usuario: {usuario.nombre} (ID: {id_usuario})")
+        for libro, usuario in prestamos_activos:
+            print(f"Libro: {libro.titulo} (ISBN: {libro.isbn}) - Usuario: {usuario.nombre} (ID: {usuario.id_usuario})")
     else:
         print("No hay prestamos activos.")
 
@@ -220,8 +219,8 @@ while True:
     elif opc == "4":
         while True:
             print("""Selecciona el numero correspondiente a la opcion deseada [1-4]
-            1) Libros mas prestados
-            2) Reporte de libros disponibles
+            1) 3 libros más prestados
+            2) Reporte de libros por autor
             3) Reporte de prestamos activos
             4) Regresar
             """)
@@ -229,8 +228,8 @@ while True:
             opc2 = input()
 
             if opc2 == "1": interfaz_libros_mas_prestados()
-            elif opc2 == "2": interfaz_reporte_prestamos_activos()
-            elif opc2 == "3": interfaz_consulta_libros_autor()
+            elif opc2 == "2": interfaz_consulta_libros_autor()
+            elif opc2 == "3": interfaz_reporte_prestamos_activos()
             elif opc2 == "4": break
             else: print("Opcion no valida, intente de nuevo")
 

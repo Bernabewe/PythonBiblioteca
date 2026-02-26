@@ -116,8 +116,26 @@ class Biblioteca:
     # ====================================================== #
 
     def registrar_prestamo(self, isbn, id_usuario):
+
+        #   Descripcion: Registra un préstamo actualizando el libro, el usuario y la lista de préstamos
+        #   Input: isbn (string), id_usuario (string)
+        if isbn not in self.catalogo:
+            return False, "El ISBN ingresado no existe en el catalogo."
+
+        if id_usuario not in self.usuarios:
+            return False, "El usuario no existe en el sistema."
+
         libro = self.catalogo[isbn]
         usuario = self.usuarios[id_usuario]
+
+        if libro.ejemplares_disponibles <= 0:
+            return False, "No hay ejemplares disponibles para este libro."
+
+        if isbn in usuario.prestamos_actuales:
+            return False, "No se permite prestar el mismo libro dos veces al mismo usuario."
+
+        if len(usuario.prestamos_actuales) >= 3:
+            return False, "El usuario ya alcanzo el limite de 3 prestamos activos."
         
         # Actualizar el libro
         libro.ejemplares_disponibles -= 1
@@ -128,14 +146,21 @@ class Biblioteca:
         
         # Registrar el préstamo
         self.prestamos.append((isbn, id_usuario))
+        return True, "Prestamo registrado exitosamente."
     
     def validar_disponibilidad(self, isbn):
+        #   Descripcion: Valida si un libro está disponible para préstamo
+        #   Input: isbn (string)
+        #   Output: Booleano (True si está disponible, False si no lo está)
+
         libro = self.catalogo.get(isbn)
         if libro and libro.ejemplares_disponibles > 0:
             return True
         return False
     
     def registrar_devolucion(self, isbn, id_usuario):
+        #   Descripcion: Registra una devolución actualizando el libro, el usuario y la lista de préstamos
+        #   Input: isbn (string), id_usuario (string)  
         libro = self.catalogo[isbn]
         usuario = self.usuarios[id_usuario]
         
@@ -146,17 +171,24 @@ class Biblioteca:
         if isbn in usuario.prestamos_actuales:
             usuario.prestamos_actuales.remove(isbn)
         
-    
+    # ====================================================== #
+    # ==========  RF4 — Consultas y reportes  ========== #
+    # ====================================================== #  
   
+
     def libros_mas_prestados(self):
-        libros = self.catalogo.values().split()
-        frecuencia_dict = {}
-        for libro in libros:
-            frecuencia_dict[libro.titulo] = frecuencia_dict.get(libro.titulo, 0) + libro.veces_prestado
-    
+        
+        # Retorna una lista de los 3 libros más prestados usando diccionario de frecuencias
+        frecuencias = {}
+        # Contar cuántas veces se ha prestado cada libro
+        for isbn, _ in self.prestamos:
+            frecuencias[isbn] = frecuencias.get(isbn, 0) + 1
+        # Ordenar los ISBN por frecuencia y obtener los 3 más prestados
+        top_isbn = sorted(frecuencias, key=frecuencias.get, reverse=True)[:3]
+        return [self.catalogo[isbn] for isbn in top_isbn if isbn in self.catalogo]
     
     def prestamos_activos(self):
-        # Retorna una lista de préstamos que aún no han sido devueltos
+        # Retorna una lista de tuplas con los libros actualmente prestados y los usuarios que los tienen
         activos = []
         for isbn, id_usuario in self.prestamos:
             libro = self.catalogo[isbn]
@@ -166,6 +198,8 @@ class Biblioteca:
         return activos
     
     def consulta_libros_autor(self, autor):
+        #  Descripcion: Consulta los libros de un autor específico
+        #  Input: autor (string)
         return self.buscar_por_autor(autor)
 
     
