@@ -19,8 +19,19 @@ def interfaz_registrar_libro():
     titulo = input("Titulo: ")
     autor = input("Autor: ")
     stock = int(input("Stock: "))
+
+    while True:
+        try:
+            stock = int(input("Stock (mayor a 0): "))
+            
+            if stock > 0: break
+            else: print("El stock no puede ser 0 o negativo. Intenta de nuevo.")
+
+        except ValueError:
+            print("Debes ingresar un numero entero mayor a 0. Intenta de nuevo.")
     
     biblioteca.registrar_libro(isbn, titulo, autor, stock)
+    print("Libro registrado exitosamente!!!")
 
 
 def interfaz_consultar_disponibilidad():
