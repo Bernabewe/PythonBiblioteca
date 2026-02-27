@@ -148,15 +148,12 @@ class Biblioteca:
         self.prestamos.append((isbn, id_usuario))
         return True, "Prestamo registrado exitosamente."
     
-    def validar_disponibilidad(self, isbn):
+    def valida_disponibilidad(self, isbn):
         #   Descripcion: Valida si un libro está disponible para préstamo
         #   Input: isbn (string)
-        #   Output: Booleano (True si está disponible, False si no lo está)
+        #   Output: Objeto Libro
 
-        libro = self.catalogo.get(isbn)
-        if libro and libro.ejemplares_disponibles > 0:
-            return True
-        return False
+        return self.catalogo.get(isbn)
     
     def registrar_devolucion(self, isbn, id_usuario):
         #   Descripcion: Registra una devolución actualizando el libro, el usuario y la lista de préstamos

@@ -18,7 +18,6 @@ def interfaz_registrar_libro():
     isbn = input("ISBN: ")
     titulo = input("Titulo: ")
     autor = input("Autor: ")
-    stock = int(input("Stock: "))
 
     while True:
         try:
@@ -109,6 +108,11 @@ def interfaz_consultar_usuarios():
 # ====================================================== #
 # ==========  RF3 — Prestamos y devoluciones  ========== #
 # ====================================================== #
+
+def interfaz_valida_disponibiliad():
+    print("\n--- Valida Disponibilidad ---")
+    isbn = input("ISBN del libro a consultar: ")
+    print(biblioteca.valida_disponibilidad(isbn))
 
 def interfaz_registrar_prestamo():
     print("\n--- Registrar Prestamo ---")
@@ -215,16 +219,18 @@ while True:
     elif opc == "3":
         while True:
             print("""Selecciona el numero correspondiente a la opcion deseada [1-3]
-            1) Registrar prestamo
-            2) Registrar devolucion
-            3) Regresar
+            1) Valida disponibilidad de Libro
+            2) Registrar prestamo
+            3) Registrar devolucion
+            4) Regresar
             """)
 
             opc2 = input()
 
-            if opc2 == "1": interfaz_registrar_prestamo()
-            elif opc2 == "2": interfaz_registrar_devolucion()
-            elif opc2 == "3": break
+            if opc2 == "1": interfaz_valida_disponibiliad()
+            elif opc2 == "2": interfaz_registrar_prestamo()
+            elif opc2 == "3": interfaz_registrar_devolucion()
+            elif opc2 == "4": break
             else: print("Opcion no valida, intente de nuevo")
     
     elif opc == "4":
