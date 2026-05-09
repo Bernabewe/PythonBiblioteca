@@ -4,7 +4,7 @@
 #   Input y Output: Se omitiran ya que ninguna de las funciones en este archivo tienen Input ni Output)
 # ========================================================================================================== #
 
-from Entidades import Biblioteca
+from SistemaBiblioteca.Entidades import Biblioteca
 
 biblioteca = Biblioteca()
 
